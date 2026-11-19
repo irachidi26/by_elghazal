@@ -1,1 +1,197 @@
 
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>متجري | التسوق الإلكتروني</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f5f6f4;color:#222}
+header{background:#173c32;color:white;padding:22px 15px;text-align:center}
+header h1{margin:0;font-size:27px}
+header p{margin:9px 0 0;color:#d8eee4}
+nav{background:#fff;padding:13px;text-align:center;box-shadow:0 2px 8px #ddd}
+nav a{color:#173c32;text-decoration:none;margin:0 12px;font-weight:bold}
+.hero{background:#173c32;color:white;text-align:center;padding:35px 15px;margin:15px;border-radius:14px}
+.hero h2{margin:0 0 10px}
+.container{max-width:1100px;margin:auto;padding:15px}
+.section-title{text-align:center;margin:28px 0;font-size:23px}
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px}
+.product{background:white;border-radius:13px;overflow:hidden;box-shadow:0 3px 12px #00000010}
+.product img{width:100%;height:210px;object-fit:cover;background:#eee}
+.product-info{padding:14px}
+.product h3{margin:0 0 10px}
+.price{color:#16845e;font-size:21px;font-weight:bold}
+.product button,.main-btn{border:0;background:#173c32;color:white;padding:12px;border-radius:8px;cursor:pointer;width:100%;font-size:15px;margin-top:12px}
+.product button:hover,.main-btn:hover{background:#245c49}
+.cart{background:white;padding:20px;border-radius:13px;margin-top:30px}
+.cart-item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eee;gap:10px}
+.remove{color:#d33;cursor:pointer;border:0;background:none}
+.total{font-size:22px;font-weight:bold;color:#16845e;margin-top:15px}
+form{display:grid;gap:12px;margin-top:18px}
+input,textarea{width:100%;padding:13px;border:1px solid #ddd;border-radius:8px;font-size:15px}
+textarea{resize:vertical;min-height:75px}
+footer{text-align:center;background:#173c32;color:white;padding:22px;margin-top:35px}
+.notice{text-align:center;color:#555;font-size:14px}
+</style>
+</head>
+<body>
+
+<header>
+<h1>متجري الإلكتروني</h1>
+<p>مرحبا بكم، تسوقوا بكل سهولة وثقة</p>
+</header>
+
+<nav>
+<a href="#home">الرئيسية</a>
+<a href="#products">المنتجات</a>
+<a href="#cart">سلة المشتريات 🛒</a>
+</nav>
+
+<section class="hero" id="home">
+<h2>اكتشف أفضل منتجاتنا</h2>
+<p>جودة ممتازة وأسعار مناسبة</p>
+<p>🚚 التوصيل لجميع أنحاء المغرب</p>
+<strong>الدفع عند الاستلام</strong>
+</section>
+
+<div class="container">
+
+<h2 class="section-title" id="products">منتجاتنا</h2>
+
+<div class="products" id="productsList"></div>
+
+<section class="cart" id="cart">
+<h2>🛒 سلة المشتريات</h2>
+<div id="cartItems">السلة فارغة</div>
+<div class="total" id="total">المجموع: 0 DH</div>
+
+<h3>معلومات التوصيل</h3>
+<form id="orderForm">
+<input id="customer" placeholder="الاسم الكامل" required>
+<input id="phone" type="tel" placeholder="رقم الهاتف" required>
+<input id="city" placeholder="المدينة" required>
+<textarea id="address" placeholder="العنوان بالتفصيل" required></textarea>
+<button class="main-btn" type="submit">تأكيد الطلب عبر WhatsApp</button>
+</form>
+<p class="notice">سنتصل بك لتأكيد طلبك قبل الإرسال ❤️</p>
+</section>
+
+</div>
+
+<footer>
+<p>© 2026 متجري الإلكتروني - جميع الحقوق محفوظة</p>
+<p>شكراً لثقتكم بنا ❤️</p>
+</footer>
+
+<script>
+// عدّل رقم واتساب هنا: رمز المغرب 212
+const WHATSAPP = "212600000000";
+
+// أضف منتجاتك هنا
+const products = [
+{
+id:1,
+name:"المنتج الأول",
+price:149,
+image:"images/product1.jpg"
+},
+{
+id:2,
+name:"المنتج الثاني",
+price:199,
+image:"images/product2.jpg"
+},
+{
+id:3,
+name:"المنتج الثالث",
+price:249,
+image:"images/product3.jpg"
+}
+];
+
+let cart = [];
+
+function showProducts(){
+const area=document.getElementById("productsList");
+area.innerHTML=products.map(p=>`
+<div class="product">
+<img src="${p.image}" alt="${p.name}" onerror="this.src='https://placehold.co/400x300?text=Product'">
+<div class="product-info">
+<h3>${p.name}</h3>
+<div class="price">${p.price} DH</div>
+<button onclick="addToCart(${p.id})">أضف إلى السلة</button>
+</div>
+</div>
+`).join("");
+}
+
+function addToCart(id){
+const product=products.find(p=>p.id===id);
+const item=cart.find(p=>p.id===id);
+if(item)item.quantity++;
+else cart.push({...product,quantity:1});
+showCart();
+}
+
+function removeItem(id){
+cart=cart.filter(p=>p.id!==id);
+showCart();
+}
+
+function showCart(){
+const area=document.getElementById("cartItems");
+if(!cart.length){
+area.innerHTML="السلة فارغة";
+}else{
+area.innerHTML=cart.map(p=>`
+<div class="cart-item">
+<span>${p.name} × ${p.quantity}</span>
+<span>${p.price*p.quantity} DH</span>
+<button class="remove" onclick="removeItem(${p.id})">حذف</button>
+</div>
+`).join("");
+}
+const total=cart.reduce((s,p)=>s+p.price*p.quantity,0);
+document.getElementById("total").textContent="المجموع: "+total+" DH";
+}
+
+document.getElementById("orderForm").addEventListener("submit",function(e){
+e.preventDefault();
+
+if(!cart.length){
+alert("المرجو إضافة منتج إلى السلة أولا");
+return;
+}
+
+const name=document.getElementById("customer").value.trim();
+const phone=document.getElementById("phone").value.trim();
+const city=document.getElementById("city").value.trim();
+const address=document.getElementById("address").value.trim();
+
+const total=cart.reduce((s,p)=>s+p.price*p.quantity,0);
+
+let message="طلب جديد من المتجر 🛍️\n\n";
+message+="الاسم: "+name+"\n";
+message+="الهاتف: "+phone+"\n";
+message+="المدينة: "+city+"\n";
+message+="العنوان: "+address+"\n\n";
+message+="المنتجات:\n";
+
+cart.forEach(p=>{
+message+=p.name+" × "+p.quantity+" = "+(p.price*p.quantity)+" DH\n";
+});
+
+message+="\nالمجموع: "+total+" DH";
+message+="\nطريقة الدفع: عند الاستلام";
+
+window.open("https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(message),"_blank");
+});
+
+showProducts();
+showCart();
+</script>
+</body>
+</html>
+
